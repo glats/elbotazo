@@ -1,5 +1,4 @@
 from webbrowser import get
-from attr import s
 import telebot
 import requests
 from bs4 import BeautifulSoup
@@ -7,25 +6,25 @@ import datetime
 from apscheduler.schedulers.blocking import BlockingScheduler
 import secrets
 
-#id de T E S T I N G grupo 
+#define telebot
+bot = telebot.TeleBot(secrets.TELEGRAM_TOKEN)
+
 c_id = secrets.c_id
 m_id = secrets.m_id
 
 #Scheduler instantiate
 sched = BlockingScheduler()
 
-#la parte del bot
 
-bot = telebot.TeleBot(secrets.TELEGRAM_TOKEN)
 
 #get hora
 def gettime():
-    now = datetime.datetime.now()
+    now = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=-4)
     return now.strftime("%H:%M")
 
 #get fecha
 def getdate():
-    now = datetime.datetime.now()
+    now = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=-4)
     return now.strftime("%d/%m/%Y")
 
 #USDCLP
@@ -47,7 +46,7 @@ def getusd():
     separado=int(float(separado))
     separado=round(separado)
     return separado
-    
+
 #BTCUSD
 def getbtcusd():
     response = requests.get('https://api.coindesk.com/v1/bpi/currentprice.json')
@@ -66,17 +65,17 @@ def send_welcome(message):
 @sched.scheduled_job('interval',id='send_welcome', minutes = 1)
 def send_welcome():
     bot.edit_message_text(
-        chat_id=c_id, 
-        text="Precio del dolar: $" + 
-        str(getusd()) + 
-        "\nPrecio del Bitcoin: $" + 
-        str(getbtcusd()) + 
-        "\n\n" + 
-        "Ultima actualizacion: " + 
-        str(gettime()) + 
-        " | " + 
-        str(getdate()), 
-        message_id=m_id)        
+        chat_id=c_id,
+        text="Precio del dolar: $" +
+        str(getusd()) +
+        "\nPrecio del Bitcoin: $" +
+        str(getbtcusd()) +
+        "\n\n" +
+        "Ultima actualizacion: " +
+        str(gettime()) +
+        " | " +
+        str(getdate()),
+        message_id=m_id)
 
 
 
@@ -86,10 +85,3 @@ sched.start()
 
 #initialize the bot
 #bot.polling()
-
-
-
-
-
-
-
